@@ -1,0 +1,1 @@
+{"status": {"state": "up", "reason": "user-set"}, "hostnames": [{"type": "user", "name": "www.bmrws.me"}, {"type": "PTR", "name": "google-public-dns-a.xrcjgx.com"}], "vendor": {}, "addresses": {"ipv4": "15.170.69.32"}, "datetime": "2016-10-04 21:06:14.731530"}

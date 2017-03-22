@@ -1,0 +1,24 @@
+<h1>Frequency of Ports</h1>
+
+<p>This chart shows how many times each port is used. The numbers on the X-axis are the ports, while the ones on the Y-axis are the number of usage.</p>
+
+<div ng-controller="TCPPortsFrequencyBarCtrl as tcpPortsFrequencyBarCtrl">
+  <div ng-show="tcpPortsFrequencyBarCtrl.data">
+    <h2>TCP Ports</h2>
+    <canvas class="chart-horizontal-bar" chart-data="tcpPortsFrequencyBarCtrl.data"
+        chart-labels="tcpPortsFrequencyBarCtrl.labels" chart-options="{ responsive: true, maintainAspectRatio: false }"></canvas> 
+  </div>
+</div>
+
+<br />
+
+<div ng-controller="UDPPortsFrequencyBarCtrl as udpPortsFrequencyBarCtrl">
+  <div ng-show="udpPortsFrequencyBarCtrl.data.length">
+    <h2>UDP Ports</h2>
+    <canvas class="chart-horizontal-bar" chart-data="udpPortsFrequencyBarCtrl.data"
+        chart-labels="udpPortsFrequencyBarCtrl.labels" chart-options="{ responsive: true, maintainAspectRatio: false }"></canvas> 
+  </div>
+</div>
+
+<br />
+

@@ -1,0 +1,1 @@
+{"status": {"state": "up", "reason": "user-set"}, "vendor": {}, "addresses": {"ipv4": "67.222.127.172"}, "tcp": {"80": {"product": "", "state": "open", "version": "", "name": "http", "conf": "3", "extrainfo": "", "reason": "syn-ack", "cpe": ""}}, "datetime": "2016-10-04 21:38:11.156144", "hostnames": [{"type": "user", "name": "www.g5kkxxr.com"}]}

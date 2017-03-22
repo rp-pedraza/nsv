@@ -1,0 +1,40 @@
+<h1>Home</h1>
+
+<p>The search tool can be helpful in finding hosts with special activities like having unusual open ports.</p>
+
+<p>Multiple ports can be specified by having them separated with spaces.</p>
+
+<br />
+
+<nit-advanced-searchbox
+  ng-model="searchParams"
+  parameters="availableSearchParams"
+  placeholder="Search for scans...                                                                                                    ">
+</nit-advanced-searchbox>
+
+<br />
+
+<table class="table table-striped table-condensed" ng-show="scans.length">
+  <thead>
+    <tr>
+      <th class="identity">Identity</th>
+      <th class="datetimes">DateTime</th>
+      <th class="addresses">Addresses</th>
+      <th class="hostnames">Hostnames</th>
+      <th class="state">State</th>
+      <th class="tcp-ports">TCP Ports</th>
+      <th class="udp-ports">UDP Ports</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="scan in scans">
+      <td><a href="#!/scans/{{ scan.id }}">{{ scan.identity }}</a></td>
+      <td>{{ scan.datetimeString }}</td>
+      <td>{{ scan.addressesString }}</td>
+      <td>{{ scan.hostnamesString }}</td>
+      <td>{{ scan.status.state }}</td>
+      <td>{{ scan.tcpPortsSring }}</td>
+      <td>{{ scan.udpPortsSring }}</td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,13 @@
+<h1>{{ scan.identity }}</h1>
+
+<table class="table table-striped table-condensed">
+  <tr><td>ID:</td><td>{{ scan.id }}</td></tr>
+  <tr><td>DateTime Scanned:</td><td>{{ scan.datetimeString }}</td></tr>
+  <tr><td>Addresses:</td><td>{{ scan.addressesString }}</td></tr>
+  <tr><td>Hostnames:</td><td>{{ scan.hostnamesString }}</td></tr>
+  <tr><td>State:</td><td>{{ scan.status.state }}</td></tr>
+  <tr><td>TCP Ports:</td><td>{{ scan.tcpPortsSring }}</td></tr>
+  <tr><td>UDP Ports:</td><td>{{ scan.udpPortsSring }}</td>
+</table>
+
+<a ng-href="#!/scans" class="btn btn-small btn-primary">Back to List</a>

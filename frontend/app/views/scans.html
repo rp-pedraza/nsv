@@ -1,0 +1,30 @@
+<h1>Scans</h1>
+
+<p>This list contains all available scans.  Visit <a ng-href="#!/">home page</a> to search or filter.</a></p>
+
+<br />
+
+<table class="table 80------9table-striped table-condensed">
+  <thead>
+    <tr>
+      <th class="identity">Identity</th>
+      <th class="datetimes">DateTime</th>
+      <th class="addresses">Addresses</th>
+      <th class="hostnames">Hostnames</th>
+      <th class="state">State</th>
+      <th class="tcp-ports">TCP Ports</th>
+      <th class="udp-ports">UDP Ports</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="scan in scans">
+      <td><a ng-href="#!/scans/{{ scan.id }}">{{ scan.identity }}</a></td>
+      <td>{{ scan.datetimeString }}</td>
+      <td>{{ scan.addressesString }}</td>
+      <td>{{ scan.hostnamesString }}</td>
+      <td>{{ scan.status.state }}</td>
+      <td>{{ scan.tcpPortsSring }}</td>
+      <td>{{ scan.udpPortsSring }}</td>
+    </tr>
+  </tbody>
+</table>
