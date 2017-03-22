@@ -3,7 +3,7 @@
 var app = angular.module('frontendApp');
 
 app.factory('Scan', function ($resource) {
-  return $resource(config.backend_server + '/scans/:id', { id: '@id' }, {
+  return $resource(config.backend_api_base_url + '/scans/:id', { id: '@id' }, {
     get: {
       method: 'GET',
       transformResponse: function (data) {
@@ -23,7 +23,7 @@ app.factory('Scan', function ($resource) {
 });
 
 app.factory('Scans', function ($resource) {
-  return $resource(config.backend_server + '/scans', {}, {
+  return $resource(config.backend_api_base_url + '/scans', {}, {
     query: {
       method: 'GET',
       transformResponse: function (data) {

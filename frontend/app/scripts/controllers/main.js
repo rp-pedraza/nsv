@@ -3,7 +3,7 @@
 var app = angular.module('frontendApp');
 
 app.factory('Search', function ($resource) {
-  return $resource(config.backend_server + '/search', {},
+  return $resource(config.backend_api_base_url + '/search', {},
     {
       query: {
         method: 'GET',

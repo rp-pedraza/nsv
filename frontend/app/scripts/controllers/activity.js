@@ -4,7 +4,7 @@ var app = angular.module('frontendApp');
 
 app.controller('ActivityCtrl', function ($scope, $http) {
   $http
-    .get(config.backend_server + '/activity')
+    .get(config.backend_api_base_url + '/activity')
     .then(
       function (response) {
         var array = response.data.sort(function (a, b) {

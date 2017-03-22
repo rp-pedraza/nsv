@@ -23,10 +23,6 @@ def do_query(url, query):
     resp = requests.post(url, data = json.dumps(query))
     return resp.json()
 
-class Root(Resource):
-    def get(self):
-        return {}
-
 class Scans(Resource):
     def get(self):
         query = {
@@ -236,12 +232,11 @@ class Activity(Resource):
 
         return activity
 
-api.add_resource(Root, '/')
-api.add_resource(Scans, '/scans')
-api.add_resource(Scan, '/scans/<scan_id>')
-api.add_resource(Search, '/search')
-api.add_resource(PortsFrequency, '/ports-frequency')
-api.add_resource(Activity, '/activity')
+api.add_resource(Scans, config['api-prefix'] + '/scans')
+api.add_resource(Scan, config['api-prefix'] + '/scans/<scan_id>')
+api.add_resource(Search, config['api-prefix'] + '/search')
+api.add_resource(PortsFrequency, config['api-prefix'] + '/ports-frequency')
+api.add_resource(Activity, config['api-prefix'] + '/activity')
 
 if __name__ == '__main__':
-    app.run(host: 'localhost', port: '5000', debug = True)
+    app.run(host = config['host'], port = config['port'], debug = True)

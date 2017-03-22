@@ -82,7 +82,7 @@ And here, we finally run the backend.  It would interact with the ElasticSearch 
 
     python application.py
 
-The server listens on [http://localhost:5000](http://localhost:5000).
+The server by default listens on [http://localhost:5000](http://localhost:5000).
 
 ### Setting Up and Running the Frontend Server
 
@@ -96,15 +96,15 @@ We then install `bower` and `npm` components required by the frontend.
 
 Then, we create the server instance.  This may also automatically open up your browser and redirect it to the web applicaton's home page.
 
-    grunt serve
+    PATH=$(npm bin):$PATH grunt serve
 
-The server is expected to listen on [http://localhost:9000](http://localhost:9000).
+The server by default listens on [http://localhost:9000](http://localhost:9000).
 
 ### Compiling the Pages and Running the Frontend Server Statically
 
 We can also compile the frontend to make it more distributable by running:
 
-    grunt build
+    PATH=$(npm bin):$PATH grunt build
 
 This would create a compiled version of the site in the `dist` directory.
 
@@ -112,4 +112,4 @@ From there, we can run the simple Python server:
 
     ( cd dist && python -m http.server )
 
-The server listens on `0.0.0.0` port `8000`.
+The server by default listens on `0.0.0.0`, port `8000`.

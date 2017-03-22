@@ -13,4 +13,4 @@ version 0.16.0.
 
 ## Different backend server address
 
-If the backend server is listening to a different address other than `http://localhost:5000`, you should change the value of `backend_server` in `app/scripts/config.js`.  You should also do that before running `grunt build` to make the new configuration affect the output files.
+If the backend server is listening to a different address other than `http://localhost:5000`, you should change the value of `backend_api_base_url` in `app/scripts/config.js`.

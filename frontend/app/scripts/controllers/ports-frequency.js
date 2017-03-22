@@ -8,7 +8,7 @@ app.controller('TCPPortsFrequencyBarCtrl', function ($http) {
   var thisCtrl = this;
   
   $http
-    .get(config.backend_server + '/ports-frequency')
+    .get(config.backend_api_base_url + '/ports-frequency')
     .then(
       function (response) {
         if ('tcp' in response.data) {
@@ -30,7 +30,7 @@ app.controller('UDPPortsFrequencyBarCtrl', function ($http) {
   var thisCtrl = this;
   
   $http
-    .get(config.backend_server + '/ports-frequency')
+    .get(config.backend_api_base_url + '/ports-frequency')
     .then(
       function (response) {
         if ('udp' in response.data) {
