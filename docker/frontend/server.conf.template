@@ -1,0 +1,27 @@
+server {
+    # These values are changed during runtime and can be configured
+    # through setting files or commands that change environment
+    # variables.
+    #
+    # See process-templates.sh for more details on these values are
+    # changed.
+    #
+    # The one important to be changed here is NSV_FRONTEND_SERVERNAME
+    # since it's the one that would vary from one deployment to another.
+    #
+    listen        <NSV_FRONTEND_IP>:<NSV_FRONTEND_PORT>;
+    listen        <NSV_FRONTEND_IPV6>:<NSV_FRONTEND_PORT>;
+    server_name   <NSV_FRONTEND_SERVERNAME>;
+    server_tokens off;
+
+    root /usr/share/nginx/html;
+
+    location / {
+        try_files $uri $uri/ @backend;
+    }
+
+    location @backend {
+        include uwsgi_params;
+        uwsgi_pass nsv-backend:5001;
+    }
+}

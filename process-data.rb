@@ -1,11 +1,15 @@
 #!/usr/bin/env ruby
 
+# Usage: [ruby] ./process-data.rb [source_dir [output_dir]]
+#
+# Default source_dir is './data'.  Default output_dir is '(source_dir).processed'.
+
 require 'json'
 require 'time'
 require 'fileutils'
 
-SOURCE_DIR = File.join('.', 'data')
-OUTPUT_DIR = File.join('.', 'data.processed')
+SOURCE_DIR = File.join('.', ARGV.shift || 'data')
+OUTPUT_DIR = ARGV.shift || SOURCE_DIR + '.processed'
 
 FileUtils.mkdir_p(OUTPUT_DIR)
 

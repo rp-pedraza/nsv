@@ -113,3 +113,7 @@ From there, we can run the simple Python server:
     ( cd dist && python -m http.server )
 
 The server by default listens on `0.0.0.0`, port `8000`.
+
+## Docker support
+
+Please see docker/README.md.
