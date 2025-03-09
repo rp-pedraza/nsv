@@ -3,13 +3,11 @@
 var app = angular.module('frontendApp');
 
 app.factory('Search', function ($resource) {
-  return $resource(config.backend_api_base_url + '/search', {},
+  return $resource(config.backend_api_base_uri_path + '/search', {},
     {
       query: {
         method: 'GET',
         transformResponse: function (data) {
-          // log("Search response: " + data)
-
           if (data == null) {
             return [];
           }
@@ -25,6 +23,10 @@ app.factory('Search', function ($resource) {
         isArray: true,
         interceptor : {
           responseError : responseErrorHandler
+        },
+        responseType: "json",
+        headers: {
+          "Content-Type": "application/json"
         }
       }
     });

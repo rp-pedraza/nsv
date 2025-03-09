@@ -1,0 +1,45 @@
+version: 3
+
+includes:
+  .data:
+    taskfile: ../data/TaskfileModule.yml
+    internal: true
+    dir: ../data
+  .es:
+    taskfile: ../es/TaskfileModule.yml
+    internal: true
+    dir: ../es
+
+tasks:
+  prepare:
+    desc: "Prepare the backend servers runtime environment"
+    preconditions:
+      - sh: test -z "${VIRTUAL_ENV}"
+        msg: Please run the command outside the virtual environment.
+      - sh: which pip >/dev/null
+        msg: pip must be installed
+      - sh: which python >/dev/null
+        msg: python must be installed
+    cmds:
+      - rm -fr ./venv
+      - python -m venv ./venv
+      - "sh -c '. ./venv/bin/activate && pip install -r requirements.txt && : > ./venv/__valid__'"
+    sources:
+      - requirements.txt
+    generates:
+      - ./venv/bin/flask
+      - ./venv/bin/python
+      - ./venv/__valid__
+
+  serve:
+    desc: Run the backend server
+    deps: [prepare]
+    cmds:
+      - "sh -c '. ./venv/bin/activate && exec python application.py'"
+
+  all:
+    desc: Runs the Elasticsearch server, imports data and runs the backend server
+    cmds:
+      - task: .es:up
+      - task: .data:import
+      - task: serve

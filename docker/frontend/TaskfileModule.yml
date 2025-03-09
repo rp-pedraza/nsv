@@ -1,0 +1,14 @@
+version: 3
+
+includes:
+  .frontend:
+    taskfile: ../../frontend/TaskfileModule.yml
+    internal: true
+    dir: ../../frontend
+
+  self:
+    taskfile: ../../taskfiles/DockerService.yml
+    flatten: true
+    vars:
+      DOCKER_SERVICE_NAME: nsv-frontend
+      DOCKER_BUILD_DEPENDENCIES: [.frontend:build]

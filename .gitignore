@@ -1,0 +1,5 @@
+.task
+node_modules
+data.processed
+venv
+__pycache__

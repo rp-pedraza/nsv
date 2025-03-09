@@ -1,0 +1,12 @@
+version: 3
+
+includes:
+  root:
+    taskfile: ../TaskfileModule.yml
+    dir: ..
+    flatten: true
+
+tasks:
+  default:
+    desc: "Run {{.DEFAULT_TASK}} (current default)"
+    deps: ['{{.DEFAULT_TASK}}']

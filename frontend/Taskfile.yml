@@ -1,0 +1,9 @@
+version: 3
+
+includes:
+  self:
+    taskfile: ../taskfiles/CommonTaskfileWithDefault.yml
+    dir: ../taskfiles
+    flatten: true
+    vars:
+      DEFAULT_TASK: frontend:serve

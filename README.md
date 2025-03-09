@@ -1,119 +1,90 @@
 # Nmap Scans Visualizer
 
-This tool demonstrates visualization of specially-formatted Nmap scan data.  It runs by 3 components:
+![Screenshot](./screenshot.jpg)
 
-- An ElasticSearch server were the data is stored and queried
-- A backend server using Flask that communicates with the ElasticSearch server and exposes API services to the web
-- The frontend server which provides the Web UI that interacts with the user and communicate with the backend server
+NSV is a simple demo web application for displaying Nmap scan data.  It consists of three main
+components:
 
-## Requirements
+- An [ElasticSearch](https://www.elastic.co/elasticsearch) server were the data is stored and
+  queried
+- A [Flask](https://flask.palletsprojects.com/en/stable/) backend server that communicates
+  with the Elasticsearch server and exposes API services to the web
+- A frontend where [AngularJS](https://angularjs.org/) is used as a runtime code generator
 
-- A running ElasticSearch server that is accessible to the backend
-- Python (Tested with 3.4.3), Ruby, Bash
-- [npm](https://www.npmjs.com/)
-- [pip](https://pip.pypa.io/en/stable/)
+## Requirements for runtime
 
-## Installation and Running Frontend and Backend Locally
+When running this application using Docker images that were uploaded in [Docker
+Hub](https://hub.docker.com/u/rppedraza), only [Docker](https://docs.docker.com/engine/install/)
+will be needed to be installed in the system.
 
-First, we create a local copy by cloning repo:
+However if the images are going to be built from source, or if the application is going to be run
+in development mode, the following tools will also be needed:
+
+- [Task](https://taskfile.dev/installation/)
+- [PNPM](https://pnpm.io/installation)
+- [Python](https://www.python.org/)
+- [Requests](https://pypi.org/project/requests/)
+
+## Cloning the repo
 
     git clone https://github.com/rp-pedraza/nsv.git
-
-Then, we change the working directory to the local copy:
-
     cd nsv
 
-### Importing Data
+## Development and production modes
 
-Then, we prepare data for importing.  This will process data from the raw JSONified nmap scan files in `data` directory and save them to `data.processed`.
+The frontend service is provided by [connect](https://www.npmjs.com/package/connect) while in
+development mode, and the backend service is provided by
+[Flask](https://flask.palletsprojects.com/en/stable/).
 
-    ruby process-data.rb
+The Elasticsearch server can be run as a Docker service.  This can be done trough the `task es:up`
+command.  Or it be can be setup manually somewhere.  It simply needs to listen on port `9200`.
 
-After that, we import the processed data to the ElasticSearch server.  The default target server is `localhost:9200`, but it can be changed by opening `import-processed-data.sh` with a text editor and changing the value next to `ELASTICSEARCH_ADDRESS=`.
+In production mode, the frontend files are statically compiled and are served through Nginx. The
+backend is still run by Flask but now works under
+[uWSGI](https://uwsgi-docs.readthedocs.io/en/latest/) and [Nginx](https://nginx.org/en/).  All
+these services and tasks run through Docker.
 
-    bash import-processed-data.sh
+## Running the application in development mode
 
-### Setting Up and Running the Backend Server
+Make sure all the necesary software are installed and run the following command in a terminal:
 
-After importing data, we now set up the backend server.  Change the working directory to `backend`:
+    task backend:all
 
-    cd backend
+This will instantiate an Elasticsearch server, import data to it, and then run the backend server.
 
-#### Preparing a Virtualenv Environment
+If the Elasticsearch server is set up to run externally, run the `task data:import backend:server`
+command instead so only the data importer and the backend server runs.
 
-From here, we create an isolated environment through `virtualenv`.
+Run the following command in another terminal as well to start the frontend server:
 
-If you don't have the tool installed in your system, you can install it with `pip`.
+    task frontend:serve
 
-    pip install virtualenv
+A browser page should automatically open up to http://localhost:9000 if everything runs correctly.
 
-Alternatively, you can have it installed for the current user only by adding the `--user` option.  This would install the files in `~/.local`.
+## Running the application in production mode through `docker compose`
 
-You would have to add `~/.local/bin` to the value of the `PATH` variable to be able to relatively execute the `virtualenv` binary.
+In this mode, all services are run through Docker.  They can be instantiated using the following
+command:
 
-    pip install virtualenv --user
-    PATH=~/.local/bin:${PATH}
+    task docker:up
 
-You can also make the modification of `PATH` permanent by adding `[[ -f ~/.bashrc ]] && . ~/.bashrc` to `~/.bash_profile` and `PATH=~/.local/bin:${PATH}` to `~/.bashrc`.
+This will build the services and its images first if they don't yet exist.  `docker:up:build` will
+force the images to be rebuilt again.
 
-Once `virtualenv` is properly installed, we continue with the creation of the environment.  Make sure you're in the `backend` directory before running the following command:
+## Running the application using the images from Docker Hub
 
-    virtualenv venv
+To use images from Docker Hub, run the following:
 
-Then, we activate the environment.
+    task docker:pull:up
 
-    source venv/bin/activate
+Or without using `task`:
 
-You would notice a change in your shell prompt when done.  It would be prefixed with `venv`.
+    ( cd docker && docker compose pull && docker compose up --no-build )
 
-At this point, we can now freely install the dependency modules without worrying about causing conflict with other setups.
+Open the browser page to http://localhost:80/ to visit the application.
 
-#### Installing Backend Dependencies
+## WSL2
 
-The following command will install all modules listed in `requirements.txt`, which are required by the backend to run.
-
-    pip install -r requirements.txt
-
-Note: For some reason the dependency package `appdirs` does not get installed.  If that happens, just run `pip install appdirs` to install it, and then run `pip install -r requirements.txt` again.
-
-#### Running the Backend
-
-And here, we finally run the backend.  It would interact with the ElasticSearch server which is expected to be listening on `localhost:9200`.  If you have it somewhere else, you can change the values in `config.py`.
-
-    python application.py
-
-The server by default listens on [http://localhost:5000](http://localhost:5000).
-
-### Setting Up and Running the Frontend Server
-
-Open another terminal and change the working directory to `nsv/frontend`.
-
-    cd /path/to/nsv/frontend
-
-We then install `bower` and `npm` components required by the frontend.
-
-    bower install && npm install
-
-Then, we create the server instance.  This may also automatically open up your browser and redirect it to the web applicaton's home page.
-
-    PATH=$(npm bin):$PATH grunt serve
-
-The server by default listens on [http://localhost:9000](http://localhost:9000).
-
-### Compiling the Pages and Running the Frontend Server Statically
-
-We can also compile the frontend to make it more distributable by running:
-
-    PATH=$(npm bin):$PATH grunt build
-
-This would create a compiled version of the site in the `dist` directory.
-
-From there, we can run the simple Python server:
-
-    ( cd dist && python -m http.server )
-
-The server by default listens on `0.0.0.0`, port `8000`.
-
-## Docker support
-
-Please see docker/README.md.
+The uploaded Docker images have been tested to work in Ubuntu 22.04 running in WSL2 mode as well.
+See [this page](https://docs.docker.com/desktop/features/wsl/) for instructions on how to have a
+properly integrated Docker setup.

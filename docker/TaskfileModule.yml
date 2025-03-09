@@ -1,0 +1,69 @@
+version: 3
+
+includes:
+  frontend:
+    taskfile: ./frontend/TaskfileModule.yml
+    dir: ./frontend
+
+  backend:
+    taskfile: ./backend/TaskfileModule.yml
+    dir: ./backend
+
+  es:
+    taskfile: ./es/TaskfileModule.yml
+    dir: ./es
+
+  initial-data-uploader:
+    taskfile: ./initial-data-uploader/TaskfileModule.yml
+    dir: ./initial-data-uploader
+
+tasks:
+  docker-binary:
+    internal: true
+    preconditions:
+      - sh: which docker >/dev/null
+        msg: docker must be installed
+
+  up:
+    desc: "Create and start all necessary services"
+    deps: [es:up:build, initial-data-uploader:up, backend:up, frontend:up]
+
+  up:build:
+    desc: "Create and start all services while also building all images"
+    deps: [es:up:build, initial-data-uploader:up:build, backend:up:build, frontend:up:build]
+
+  up:no-build:
+    desc: "Create and start alll services but dont build any image"
+    deps: [es:up:no-build, initial-data-uploader:up:no-build, backend:up:no-build, frontend:up:no-build]
+
+  down:
+    desc: Stop and remove all services
+    deps: [frontend:down, backend:down, initial-data-uploader:down, es:down]
+
+  build:
+    desc: "Build all service along with its images"
+    deps: [es:build, initial-data-uploader:build, backend:build, frontend:build]
+
+  pull:
+    desc: "Pull all service images from Docker Hub"
+    deps: [es:pull, initial-data-uploader:pull, backend:pull, frontend:pull]
+
+  pull:up:
+    desc: "Pull all service images from Docker Hub and then create and start them"
+    cmds:
+      - for:
+          matrix:
+            TASK: [pull, up:no-build]
+            SVC: [es, initial-data-uploader, backend, frontend]
+        task: '{{.ITEM.SVC}}:{{.ITEM.TASK}}'
+
+  publish:
+    desc: "Build, tag and push all buildable service images to Docker Hub"
+    cmds:
+      - for: { var: DOCKER_PUBLISH_DEPENDENCIES, as: DEP }
+        task: '{{.DEP}}'
+      - for:
+          matrix:
+            TASK: [build, tag, push]
+            SVC: [frontend, backend, initial-data-uploader]
+        task: '{{.ITEM.SVC}}:{{.ITEM.TASK}}'

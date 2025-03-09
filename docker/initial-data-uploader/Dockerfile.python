@@ -1,0 +1,9 @@
+# FROM python:3.12-alpine
+# RUN pip install "requests<3"
+FROM xr09/python-requests:3.12
+
+WORKDIR /import-processed-data/scripts
+COPY --from=root data/data.processed /import-processed-data/data.processed
+COPY --from=root scripts/*.py data/scripts/*.py /import-processed-data/scripts/
+
+CMD ["/bin/sh", "-c", "python3 wait-for-valid-response.py http://nsv-es:9200 && python3 import-processed-data.py http://nsv-es:9200 --yes"]

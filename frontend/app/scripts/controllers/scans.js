@@ -3,14 +3,11 @@
 var app = angular.module('frontendApp');
 
 app.factory('Scan', function ($resource) {
-  return $resource(config.backend_api_base_url + '/scans/:id', { id: '@id' }, {
+  return $resource(config.backend_api_base_uri_path + '/scans/:id', { id: '@id' }, {
     get: {
       method: 'GET',
       transformResponse: function (data) {
-        if (data == null) {
-          return {};
-        }
-
+        data = data ? data : {};
         var scan = angular.fromJson(data);
         addFormattedFields(scan);
         return scan;
@@ -23,13 +20,11 @@ app.factory('Scan', function ($resource) {
 });
 
 app.factory('Scans', function ($resource) {
-  return $resource(config.backend_api_base_url + '/scans', {}, {
+  return $resource(config.backend_api_base_uri_path + '/scans', {}, {
     query: {
       method: 'GET',
       transformResponse: function (data) {
-        if (data == null) {
-          return [];
-        }
+        data = data ? data : {};
 
         var array = angular.fromJson(data);
 
@@ -53,7 +48,7 @@ app.factory('Scans', function ($resource) {
         return array;
       },
       isArray: true,
-      interceptor : {
+      interceptor: {
         responseError : responseErrorHandler
       }
     }

@@ -8,12 +8,16 @@ require 'json'
 require 'time'
 require 'fileutils'
 
-SOURCE_DIR = File.join('.', ARGV.shift || 'data')
-OUTPUT_DIR = ARGV.shift || SOURCE_DIR + '.processed'
+default_data_dir = File.join(__dir__, '..', 'data')
+source_dir = ARGV.shift || DEFAULT_DATA_DI
+output_dir = ARGV.shift || source_dir + '.processed'
 
-FileUtils.mkdir_p(OUTPUT_DIR)
+raise "Data directory '#{source_dir}' doesn't exist.") unless File.directory?(source_dir)
+FileUtils.mkdir_p(output_dir)
+files = Dir.glob(File.join(source_dir, '*.json'))
+raise "No data file found in '#{source_dir}'" if files.empty?
 
-Dir.glob(File.join(SOURCE_DIR, '*.json')).each do |file_path|
+files.each do |file_path|
   puts "Processing #{file_path}."
 
   json_str = File.read(file_path)
@@ -27,7 +31,7 @@ Dir.glob(File.join(SOURCE_DIR, '*.json')).each do |file_path|
   hash['datetime'] = Time.parse(hash['datetime']).strftime('%s.%N').to_f
 
   new_json_str = JSON.generate(hash)
-  new_file_path = File.join(OUTPUT_DIR, File.basename(file_path))
+  new_file_path = File.join(output_dir, File.basename(file_path))
 
   puts "Saving data to #{new_file_path}."
   File.write(new_file_path, new_json_str)

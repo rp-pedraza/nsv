@@ -1,0 +1,24 @@
+services:
+  nsv-es-dev:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.16
+    container_name: nsv-es-dev
+    environment:
+      - cluster.name=nsv-cluster
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - nsv-es-dev-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+
+volumes:
+  nsv-es-dev-data:

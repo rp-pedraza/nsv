@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This script would check if the current ElasticSearch instance has no
 # data yet.
 
-ELASTICSEARCH_ADDRESS='nsv-es:9200'
+ELASTICSEARCH_ADDRESS=${1-http://nsv-es:9200}
 ELASTICSEARCH_INDEX_ADDRESS=${ELASTICSEARCH_ADDRESS}/nmap_scans
 ELASTICSEARCH_INDEX_TYPE_ADDRESS=${ELASTICSEARCH_INDEX_ADDRESS}/default
 PROCESSED_DATA_LOCATION='./data.processed'

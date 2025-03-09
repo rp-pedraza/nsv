@@ -1,0 +1,95 @@
+version: 3
+
+tasks:
+  docker-binary:
+    internal: true
+    preconditions:
+      - sh: which docker >/dev/null
+        msg: docker must be installed
+
+  up:
+    desc: "Create and start {{.DOCKER_SERVICE_NAME}} service"
+    deps:
+      - task: docker-binary
+      - for: { var: DOCKER_UP_DEPENDENCIES, as: DEP }
+        task: '{{.DEP}}'
+      - for: { var: DOCKER_BUILD_DEPENDENCIES, as: DEP }
+        task: '{{.DEP}}'
+    cmds:
+      - docker compose up --detach {{.DOCKER_SERVICE_NAME}}
+
+  up:build:
+    desc: "Create and start {{.DOCKER_SERVICE_NAME}} service while also building images always"
+    deps:
+      - task: docker-binary
+      - for: { var: DOCKER_UP_DEPENDENCIES, as: DEP }
+        task: '{{.DEP}}'
+      - for: { var: DOCKER_BUILD_DEPENDENCIES, as: DEP }
+        task: '{{.DEP}}'
+    cmds:
+      - docker compose up --detach {{.DOCKER_SERVICE_NAME}}
+
+  up:no-build:
+    desc: "Create and start {{.DOCKER_SERVICE_NAME}} service but don't build any image"
+    deps:
+      - task: docker-binary
+      - for: { var: DOCKER_UP_DEPENDENCIES, as: DEP }
+        task: '{{.DEP}}'
+    cmds:
+      - docker compose up --detach {{.DOCKER_SERVICE_NAME}}
+
+  down:
+    desc: Stop and remove {{.DOCKER_SERVICE_NAME}} service
+    deps:
+      - task: docker-binary
+      - for: { var: DOCKER_DOWN_DEPENDENCIES, as: DEP }
+        task: '{{.DEP}}'
+    cmds:
+      - docker compose down {{.DOCKER_SERVICE_NAME}}
+
+  build:
+    desc: "Build {{.DOCKER_SERVICE_NAME}}'s service image"
+    deps:
+      - task: docker-binary
+      - for: { var: DOCKER_BUILD_DEPENDENCIES, as: DEP }
+        task: '{{.DEP}}'
+    cmds:
+      - docker compose build {{.DOCKER_SERVICE_NAME}}
+
+  pull:
+    desc: "Pull {{.DOCKER_SERVICE_NAME}}'s service images from Docker Hub"
+    deps:
+      - task: docker-binary
+      - for: { var: DOCKER_PULL_DEPENDENCIES, as: DEP }
+        task: '{{.DEP}}'
+    cmds:
+      - task: down # Avoid container name conflicts
+      - docker compose pull {{.DOCKER_SERVICE_NAME}}
+
+  pull:up:
+    desc: "Pull {{.DOCKER_SERVICE_NAME}}'s services image from Docker Hub and then create and start the service"
+    cmds:
+      - task: pull
+      - task: up:no-build
+
+  tag:
+    internal: true
+    cmds:
+      - docker image tag rppedraza/{{.DOCKER_SERVICE_NAME}} rppedraza/{{.DOCKER_SERVICE_NAME}}:$(TZ=UTZ date +%Y%m%d%H%M%S)
+      - docker image tag rppedraza/{{.DOCKER_SERVICE_NAME}} rppedraza/{{.DOCKER_SERVICE_NAME}}:latest
+
+  push:
+    internal: true
+    cmds:
+      - docker push rppedraza/{{.DOCKER_SERVICE_NAME}} -a
+
+  publish:
+    desc: "Build, tag and push {{.DOCKER_SERVICE_NAME}}'s service buildable image to Docker Hub"
+    deps:
+      - task: docker-binary
+      - for: { var: DOCKER_PUBLISH_DEPENDENCIES, as: DEP }
+        task: '{{.DEP}}'
+    cmds:
+      - task: build
+      - task: tag
+      - task: push

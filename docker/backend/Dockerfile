@@ -1,4 +1,4 @@
-FROM python:3.5
+FROM python:3.12
 
 # Change user to 'root'.
 USER root
@@ -7,16 +7,18 @@ USER root
 RUN pip install uwsgi
 
 # Install requirements.
-COPY requirements.txt /var/tmp/requirements.txt
-RUN pip install -r /var/tmp/requirements.txt; rm /var/tmp/requirements.txt
+COPY --from=root backend/requirements.txt /var/tmp/requirements.txt
+RUN pip install -r /var/tmp/requirements.txt
+RUN rm /var/tmp/requirements.txt
 
 # Add 'backend' user.
 RUN useradd backend -d /dev/null -s /sbin/nologin
 
 # Install application to /app.
 RUN mkdir /app
-COPY application.py /app/application.py
+COPY --from=root backend/application.py /app/application.py
 COPY config.py /app/config.py
+RUN ls /app
 RUN chown backend:backend /app -R
 
 # Change user to 'backend'.
@@ -29,5 +31,5 @@ WORKDIR /app
 EXPOSE 5001
 
 # Set the command to execute at runtime.
-# To debug with html, add '--http-socket 0.0.0.0:5000'.  You also need to publish the port.
+# To debug with html, add '--http-socket 0.0.0.0:5000' and expose the port.
 CMD exec /usr/local/bin/uwsgi --master --wsgi-file application.py --callable app --threads 2 --socket 0.0.0.0:5001

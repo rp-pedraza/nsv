@@ -38,7 +38,7 @@ module.exports = function(config) {
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'app/scripts/**/*.js',
-      'test/mock/**/*.js',
+      'node_modules/lodash/lodash.min.js',
       'test/spec/**/*.js'
     ],
 
@@ -58,12 +58,12 @@ module.exports = function(config) {
     // - PhantomJS
     // - IE (only Windows)
     browsers: [
-      'PhantomJS'
+      'jsdom'
     ],
 
     // Which plugins to enable
     plugins: [
-      'karma-phantomjs-launcher',
+      'karma-jsdom-launcher',
       'karma-jasmine'
     ],
 

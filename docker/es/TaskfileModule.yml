@@ -1,0 +1,10 @@
+version: 3
+
+includes:
+  self:
+    taskfile: ../../taskfiles/DockerService.yml
+    dir: .
+    flatten: true
+    vars:
+      DOCKER_SERVICE_NAME: nsv-es
+    excludes: [publish]

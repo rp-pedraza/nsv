@@ -1,0 +1,147 @@
+version: 3
+
+tasks:
+  pnpm:
+    internal: true
+    preconditions:
+      - sh: which pnpm >/dev/null
+        msg: pnpm must be installed
+      - sh: test -n ${PNPM_HOME}
+        msg: PNPM_HOME environment variable must be set
+
+  prepare:
+    desc: Install node modules and bower components
+    deps: [pnpm]
+    sources:
+      - bower.json
+      - package.json
+      - pnpm-lock.yaml
+    cmds:
+      - pnpm i
+      - pnpm exec bower i
+    generates:
+      - bower_components/angular-advanced-searchbox/*.json
+      - bower_components/angular-animate/*.json
+      - bower_components/angular-animate/*.json
+      - bower_components/angular-bootstrap/*.json
+      - bower_components/angular-bootstrap/*.json
+      - bower_components/angular-chart.js/*.json
+      - bower_components/angular-chart.js/*.json
+      - bower_components/angular-cookies/*.json
+      - bower_components/angular-cookies/*.json
+      - bower_components/angular-mocks/*.json
+      - bower_components/angular-mocks/*.json
+      - bower_components/angular-resource/*.json
+      - bower_components/angular-resource/*.json
+      - bower_components/angular-route/*.json
+      - bower_components/angular-route/*.json
+      - bower_components/angular-sanitize/*.json
+      - bower_components/angular-sanitize/*.json
+      - bower_components/angular-touch/*.json
+      - bower_components/angular-touch/*.json
+      - bower_components/angular/*.json
+      - bower_components/angular/*.json
+      - bower_components/bootstrap-sass-official/*.json
+      - bower_components/bootstrap-sass-official/*.json
+      - bower_components/bootstrap/*.json
+      - bower_components/bootstrap/*.json
+      - bower_components/chart.js/*.json
+      - bower_components/chart.js/*.json
+      - bower_components/d3/*.json
+      - bower_components/jquery/*.json
+      - bower_components/moment/*.json
+      - bower_components/vega-lite/*.json
+      - bower_components/vega-lite/*.json
+      - bower_components/vega/*.json
+      - bower_components/vega/*.json
+      - bower_components/viscompass/*.json
+      - bower_components/viscompass/*.json
+      - node_modules/.pnpm/grunt-*/package.json # Force use of PNPM to allow overrides
+      - node_modules/autoprefixer-core/package.json
+      - node_modules/bower/package.json
+      - node_modules/grunt-angular-templates/package.json
+      - node_modules/grunt-cli/package.json
+      - node_modules/grunt-concurrent/package.json
+      - node_modules/grunt-contrib-clean/package.json
+      - node_modules/grunt-contrib-concat/package.json
+      - node_modules/grunt-contrib-connect/package.json
+      - node_modules/grunt-contrib-copy/package.json
+      - node_modules/grunt-contrib-cssmin/package.json
+      - node_modules/grunt-contrib-htmlmin/package.json
+      - node_modules/grunt-contrib-imagemin/package.json
+      - node_modules/grunt-contrib-jshint/package.json
+      - node_modules/grunt-contrib-sass/package.json
+      - node_modules/grunt-contrib-uglify/package.json
+      - node_modules/grunt-contrib-watch/package.json
+      - node_modules/grunt-filerev/package.json
+      - node_modules/grunt-google-cdn/package.json
+      - node_modules/grunt-jscs/package.json
+      - node_modules/grunt-karma/package.json
+      - node_modules/grunt-newer/package.json
+      - node_modules/grunt-ng-annotate/package.json
+      - node_modules/grunt-postcss/package.json
+      - node_modules/grunt-svgmin/package.json
+      - node_modules/grunt-usemin/package.json
+      - node_modules/grunt-wiredep/package.json
+      - node_modules/grunt/package.json
+      - node_modules/http-proxy-middleware/package.json
+      - node_modules/jasmine-core/package.json
+      - node_modules/jit-grunt/package.json
+      - node_modules/jsdom/package.json
+      - node_modules/jshint-stylish/package.json
+      - node_modules/karma-jasmine/package.json
+      - node_modules/karma-jsdom-launcher/package.json
+      - node_modules/karma/package.json
+      - node_modules/lodash/package.json
+      - node_modules/sass/package.json
+      - node_modules/serve-static/package.json
+      - node_modules/time-grunt/package.json
+
+  build:
+    desc: Build dist files
+    deps: [prepare]
+    sources:
+      - app/**/*.*
+      - bower_components/**/*.js
+    cmds:
+      - pnpm exec grunt build
+    generates:
+      - dist/index.html
+      - dist/404.html
+      - dist/favicon/favicon-32x32.png
+      - dist/favicon/apple-touch-icon.png
+      - dist/favicon/android-chrome-512x512.png
+      - dist/favicon/favicon-16x16.png
+      - dist/favicon/android-chrome-192x192.png
+      - dist/favicon/about.txt
+      - dist/favicon/favicon.ico
+      - dist/favicon/site.webmanifest
+      - dist/styles/main.ee248c32.css
+      - dist/fonts/glyphicons-halflings-regular.woff
+      - dist/fonts/glyphicons-halflings-regular.eot
+      - dist/fonts/glyphicons-halflings-regular.svg
+      - dist/fonts/glyphicons-halflings-regular.ttf
+      - dist/fonts/glyphicons-halflings-regular.woff2
+      - dist/images/yeoman.*.png
+      - dist/scripts/scripts.*.js
+      - dist/scripts/vendor.*.js
+      - dist/robots.txt
+
+  rebuild:
+    desc: Rebuild dist files
+    cmds:
+      - rm -fr dist
+      - task: build
+
+  serve:
+    desc: Run frontend server
+    deps: [prepare]
+    cmds:
+      - bash ../scripts/wait-for-valid-response.bash http://localhost:5000/api/scans/1
+      - pnpm exec grunt serve
+
+  test:
+    desc: Run tests
+    deps: [prepare]
+    cmds:
+      - pnpm exec grunt test

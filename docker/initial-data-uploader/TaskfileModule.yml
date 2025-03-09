@@ -1,0 +1,14 @@
+version: 3
+
+includes:
+  .data:
+    taskfile: ../../data/TaskfileModule.yml
+    internal: true
+    dir: ../../data
+
+  self:
+    taskfile: ../../taskfiles/DockerService.yml
+    flatten: true
+    vars:
+      DOCKER_SERVICE_NAME: nsv-initial-data-uploader
+      DOCKER_BUILD_DEPENDENCIES: [.data:process-data]

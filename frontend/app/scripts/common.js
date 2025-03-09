@@ -17,6 +17,7 @@ function addFormattedFields(scan) {
 
 function responseErrorHandler(response) {
   alert("Server response error.");
+  console.error("Error resonse:", response);
 }
 
 function getType(o) { return o && o.constructor && o.constructor.name; }

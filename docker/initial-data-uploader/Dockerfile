@@ -1,7 +1,13 @@
-FROM buildpack-deps:jessie
+# This is the Dockerfile used by 'docker image build'.
+# The Dockerfile configured to be used during 'docker compose' is configured
+# in the compose file.
 
-COPY data.processed /data.processed
-COPY check-if-no-data.sh /check-if-no-data.sh
-COPY import-processed-data-2.sh /import-processed-data-2.sh
+FROM python:3-alpine
 
-CMD exec bash -c 'cd /; echo "Initial data will be attempted to be loaded after 40 seconds." && sleep 40 && ( . check-if-no-data.sh ) && ( . import-processed-data-2.sh )'
+RUN pip install requests
+
+WORKDIR /import-processed-data/scripts
+COPY --from=root data/data.processed /import-processed-data/data.processed
+COPY --from=root data/scripts/*.py /import-processed-data/scripts/
+
+CMD ["/bin/sh", "-c", "python3 wait-for-valid-response.py http://nsv-es:9200 && python3 import-processed-data.py http://nsv-es:9200 --yes"]

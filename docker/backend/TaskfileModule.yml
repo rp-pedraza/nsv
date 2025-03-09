@@ -1,0 +1,8 @@
+version: 3
+
+includes:
+  self:
+    taskfile: ../../taskfiles/DockerService.yml
+    flatten: true
+    vars:
+      DOCKER_SERVICE_NAME: nsv-backend

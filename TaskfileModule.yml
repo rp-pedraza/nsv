@@ -1,0 +1,19 @@
+version: 3
+
+includes:
+  frontend:
+    taskfile: ./frontend/TaskfileModule.yml
+    dir: ./frontend
+
+  backend:
+    taskfile: ./backend/TaskfileModule.yml
+    dir: ./backend
+
+  data:
+    taskfile: ./data/TaskfileModule.yml
+    dir: ./data
+
+  docker:
+    taskfile: ./docker/TaskfileModule.yml
+    dir: ./docker
+

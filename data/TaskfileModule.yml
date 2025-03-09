@@ -1,0 +1,78 @@
+version: 3
+
+tasks:
+  bash:
+    preconditions:
+      - sh: which bash >/dev/null
+        msg: bash must be installed
+    internal: true
+
+  curl:
+    preconditions:
+      - sh: which curl >/dev/null
+        msg: curl must be installed
+    internal: true
+
+  python3:
+    preconditions:
+      - sh: which python3 >/dev/null
+        msg: python3 must be installed
+    internal: true
+
+  ruby:
+    preconditions:
+      - sh: which ruby >/dev/null
+        msg: ruby must be installed
+    internal: true
+
+  process-data:using-python:
+    desc: Create uploadable data from raw data (using Python)
+    deps: [python3]
+    cmds:
+      - "rm -fr data.processed && python3 scripts/process-data.py && : > data.processed/__valid__"
+    sources:
+      - data/*.json
+    generates:
+      - data.processed/__valid__
+    internal: true
+
+  process-data:using-ruby:
+    desc: Create uploadable data from raw data (using Ruby)
+    deps: [ruby]
+    cmds:
+      - "rm -fr data.processed && ruby scripts/process-data.rb && : > data.processed/__valid__"
+    sources:
+      - data/*.json
+    generates:
+      - data.processed/__valid__
+    internal: true
+
+  process-data:
+    desc: Create uploadable data from raw data
+    deps: [process-data:using-python]
+
+  import:using-python:
+    desc: Import data to the Elasticsearch instance (using Python)
+    deps: [process-data, python3]
+    sources:
+      - data.processed/*.json
+    cmds:
+      - "python3 ../scripts/wait-for-valid-response.py http://localhost:9200 && python3 scripts/import-processed-data.py && : > data.processed/__imported__"
+    generates:
+      - data.processed/__imported__
+    internal: true
+
+  import:using-bash-and-curl:
+    desc: Import data to the Elasticsearch instance (using Bash and Curl)
+    deps: [process-data, bash, curl]
+    sources:
+      - data.processed/*.json
+    cmds:
+      - "bash ../scripts/wait-for-valid-response.bash http://localhost:9200 && bash scripts/import-processed-data.bash && : > data.processed/__imported__"
+    generates:
+      - data.processed/__imported__
+    internal: true
+
+  import:
+    desc: Import data to the Elasticsearch instance
+    deps: [import:using-python]

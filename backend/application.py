@@ -1,11 +1,16 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 from flask_cors import CORS
-import requests
 import json
+import logging
+import requests
 import sys
 
 from config import config
+
+if (config['debug-mode']):
+    from logging_middleware import LoggingMiddleware
+    import pprint
 
 app = Flask(__name__)
 CORS(app) # Prevent 'Cross Origin Requests Blocked'
@@ -20,7 +25,15 @@ def is_string(s):
         return isinstance(s, basestring)
 
 def do_query(url, query):
-    resp = requests.post(url, data = json.dumps(query))
+    if (config['debug-mode']):
+        app.logger.debug('Query string: ' + json.dumps(query))
+
+    resp = requests.post(url, data=json.dumps(query),
+                              headers={"Content-Type": "application/json; charset=utf-8"})
+
+    if (config['debug-mode']):
+        app.logger.debug('Response: ' + pprint.pformat(resp.json()))
+
     return resp.json()
 
 class Scans(Resource):
@@ -53,13 +66,16 @@ class Scan(Resource):
 
 class Search(Resource):
     def get(self):
+        if (config['debug-mode']):
+            app.logger.debug('Search was requested.')
+
         for arg in ['query', 'identity', 'address', 'hostname', 'state', 'tcpports', 'udpports']:
-            parser.add_argument(arg)
+            parser.add_argument(arg, location='args')
 
         arguments = parser.parse_args()
 
         if (config['debug-mode']):
-            print("Search arguments: " + json.dumps(arguments))
+            app.logger.debug("Search arguments: " + json.dumps(arguments))
 
         subqueries = []
 
@@ -170,15 +186,15 @@ class Search(Resource):
                 'size': 100
             }
 
-            if (config['debug-mode']):
-                print("Query string: " + json.dumps(query))
-
             data = do_query(config['es-search-url'], query)
 
             for hit in data['hits']['hits']:
                 scan = hit['_source']
                 scan['id'] = hit['_id']
                 scans.append(scan)
+
+        if (config['debug-mode']):
+            app.logger.debug('Scans: ' + pprint.pformat(scans))
 
         return scans
 
@@ -238,5 +254,9 @@ api.add_resource(Search, config['api-prefix'] + '/search')
 api.add_resource(PortsFrequency, config['api-prefix'] + '/ports-frequency')
 api.add_resource(Activity, config['api-prefix'] + '/activity')
 
+if (config['debug-mode']):
+    app.logger.setLevel(logging.DEBUG)
+    app.wsgi_app = LoggingMiddleware(app.wsgi_app)
+
 if __name__ == '__main__':
-    app.run(host = config['host'], port = config['port'], debug = True)
+    app.run(host=config['host'], port=config['port'], debug=config['debug-mode'])

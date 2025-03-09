@@ -4,7 +4,7 @@ var app = angular.module('frontendApp');
 
 app.controller('ActivityCtrl', function ($scope, $http) {
   $http
-    .get(config.backend_api_base_url + '/activity')
+    .get(config.backend_api_base_uri_path + '/activity')
     .then(
       function (response) {
         var array = response.data.sort(function (a, b) {
@@ -23,7 +23,7 @@ app.controller('ActivityCtrl', function ($scope, $http) {
         $scope.labels = jQuery.map(array, function (e) {
           return e.identity;
         });
-        
+
         $scope.data = jQuery.map(array, function (e) {
           return e.level;
         });
